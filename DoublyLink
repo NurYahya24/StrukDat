@@ -1,0 +1,526 @@
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctime>
+#include <bits/stdc++.h>
+
+using namespace std;
+
+struct pelanggan{
+	string nama, layanan, id;
+	int berat, harga, tgl, bln, thn;
+};
+struct Node{
+	pelanggan data;
+	Node *next = NULL;
+	Node *prev = NULL;
+};
+
+bool isEmpty(Node *head,Node *tail){
+	if (head == NULL && tail == NULL){
+		return true;
+	}
+	return false;
+}
+int pilih, i, urut, panjangList;
+string up;
+
+int sumLIST(Node *head){
+	panjangList=0;
+	while(head !=NULL){
+		panjangList++;
+		head = head->next;
+	}
+	return panjangList;
+}
+string randomID(int len){
+	string str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", newstr;
+	int pos;
+	while(newstr.size() != len){
+		pos = ((rand()%(str.size()-1)));
+		newstr+=str.substr(pos, 1);
+	}
+	return newstr;
+}
+//-----------------------TAMPILKAN---------------------------
+void showHEAD(Node *head){
+	Node *temp = head;
+	int indeks;
+	for (indeks=0;temp!=NULL;indeks++){
+		cout<<"\n"<<endl;
+		cout<<"Data Indeks Ke-"<<indeks<<endl;
+		cout<<"Kode Transaksi\t: "<<temp->data.id<<endl;
+		cout<<"Nama\t\t: "<<temp->data.nama<<endl;
+		cout<<"Jenis Layanan\t: "<<temp->data.layanan<<endl;
+		cout<<"Berat Pakaian\t: "<<temp->data.berat<<" Kg"<<endl;
+		cout<<"Total Biaya\t: "<<"Rp. "<<temp->data.harga<<endl;
+		cout<<"Tanggal\t\t: "<<temp->data.tgl<<"/"<<temp->data.bln<<"/"<<temp->data.thn<<endl;
+		temp = temp->next;
+	}
+}
+void showTAIL(Node *tail){
+	Node *temp = tail;
+	int indeks;
+	for (indeks=0;temp!=NULL;indeks++){
+		cout<<"\n"<<endl;
+		cout<<"Data Indeks Ke-"<<indeks<<endl;
+		cout<<"Kode Transaksi\t: "<<temp->data.id<<endl;
+		cout<<"Nama\t\t: "<<temp->data.nama<<endl;
+		cout<<"Jenis Layanan\t: "<<temp->data.layanan<<endl;
+		cout<<"Berat Pakaian\t: "<<temp->data.berat<<" Kg"<<endl;
+		cout<<"Total Biaya\t: "<<"Rp. "<<temp->data.harga<<endl;
+		cout<<"Tanggal\t\t: "<<temp->data.tgl<<"/"<<temp->data.bln<<"/"<<temp->data.thn<<endl;
+		temp = temp->prev;
+	}
+}
+
+
+//======================TAMBAH======================
+Node *addNode(){
+	Node *nodeBaru = new Node();
+	while(true){
+		cout<<"Masukkan Nama : ";fflush(stdin);getline(cin, nodeBaru->data.nama);
+		cout<<"Masukkan Berat Pakaian : ";cin>>nodeBaru->data.berat;if(cin.fail()){
+		cout<<"Input Harus Angka"<<endl;cin.clear();cin.ignore(1000,'\n');continue;}
+		cout<<"Pilih Jenis Layanan : "<<endl;
+		cout<<"1. Wet Clean(Rp. 5000/Kg)"<<endl;
+		cout<<"2. Dry Clean(Rp. 7000/Kg)"<<endl;
+		cout<<"Masukkan Pilihan...";cin>>pilih;
+		switch(pilih){
+			case 1 : nodeBaru->data.layanan = "Wet Clean";
+			nodeBaru->data.harga = nodeBaru->data.berat * 5000;break;
+			case 2 : nodeBaru->data.layanan = "Dry Clean";
+			nodeBaru->data.harga = nodeBaru->data.berat * 7000;break;
+			default: cout<<"Pilihan Tidak Tersedia"<<endl;
+			system("pause");cin.clear();cin.ignore(1000, '\n');continue;
+			break;
+			}
+		cout<<"Masukkan Tanggal(h) : ";cin>>nodeBaru->data.tgl;
+		cout<<"Masukkan Bulan(b) : ";cin>>nodeBaru->data.bln;
+		cout<<"Masukkan Tahun(t) : ";cin>>nodeBaru->data.thn;
+		break;
+	}
+	srand(time(0));
+	string id_random = randomID(7);
+	nodeBaru->data.id = id_random;
+	return nodeBaru;
+}
+void addLAST(Node **head, Node **tail){
+	Node *nodeBaru = addNode();
+	nodeBaru->prev = *tail;
+	nodeBaru->next = NULL;
+	(*tail)->next = nodeBaru;//(tail)->next
+	*tail = nodeBaru;
+	cout<<"Data Telah Tersimpan"<<endl;
+	system("pause");
+	system("cls");
+}
+void addFIRST(Node **head, Node **tail){
+	Node *nodeBaru = addNode();
+	nodeBaru->prev = NULL;
+	nodeBaru->next = NULL;
+	if(*head==NULL){
+		*head=nodeBaru;
+		*tail=nodeBaru;
+	}
+	else{
+		nodeBaru->next = *head;
+		(*head)->prev = nodeBaru;
+		*head = nodeBaru;
+	}
+	cout<<"Data Telah Tersimpan"<<endl;
+	system("pause");
+	system("cls");
+
+}
+void addBETWEEN(Node **head, Node **tail){
+	system("cls");
+	showHEAD(*head);
+	cout<<"Masukkan Data Pada Indeks Ke : ";cin>>pilih;
+	if(pilih==0){
+		addFIRST(head, tail);
+		system("cls");
+	}else if(pilih==sumLIST(*head)){
+		system("cls");
+		addLAST(head, tail);
+	}else if(pilih>0&&pilih<sumLIST(*head)){
+		system("cls");
+		Node *nodeBaru = addNode();
+		Node *temp = *head;
+		for(i=0;i<pilih-1;i++){
+			temp = temp->next;
+		}
+		nodeBaru->next=temp->next;
+		temp->next=nodeBaru;
+		nodeBaru->prev=temp;
+		cout<<"Data Berhasil Ditambah"<<endl;
+		system("pause");
+		system("cls");
+	}else{
+		cout<<"Indeks Diluar Jangkauan"<<endl;
+		system("pause");
+		system("cls");
+	}
+}
+
+
+
+//=====================HAPUS=====================
+void deleteLAST(Node **head, Node **tail){
+	if((*head)->next==NULL){
+		Node *del = *head;
+		*head = NULL;
+		*tail = NULL;
+		delete del;
+		cout<<"Data Berhasil Dihapus"<<endl;
+		system("pause");
+		system("cls");
+	}else{
+		Node *del;
+		del = *tail;
+		*tail =(*tail)->prev;
+		(*tail)->next=NULL;
+		delete del;
+		cout<<"Data Berhasil Dihapus"<<endl;
+		system("pause");
+		system("cls");
+	}
+}
+
+void deleteFIRST(Node **head, Node **tail){
+	if((*head)->next==NULL){
+		Node *del = *head;
+		*head = NULL;
+		*tail = NULL;
+		delete del;
+		cout<<"Data Berhasil Dihapus"<<endl;
+		system("pause");
+		system("cls");
+	}else{
+		Node *del;
+		del = *head;
+		*head =(*head)->next;
+		(*tail)->prev=NULL;
+		delete del;
+		cout<<"Data Berhasil Dihapus"<<endl;
+		system("pause");
+		system("cls");
+	}
+}
+deleteBETWEEN(Node **head, Node **tail){
+	cout<<"Pilih Indeks Yang Ingin Dihapus : ";cin>>pilih;
+	if(pilih==0){
+		deleteFIRST(head, tail);
+	}else if(pilih==sumLIST(*head)-1){
+		deleteLAST(head, tail);
+	}else if(pilih>0&&pilih<sumLIST(*head)){
+		Node *temp = *head;
+		for(i=0;i<pilih;i++){
+			temp = temp->next;
+		}
+		temp->next->prev = temp->prev;
+		temp->prev->next = temp->next;
+		free(temp);
+		cout<<"Data Berhasil Dihapus"<<endl;
+		system("pause");
+		system("cls");
+	}else{
+		cout<<"Indeks Diluar Jangkauan"<<endl;
+		system("pause");
+		system("cls");
+	}
+}
+
+//===========================UPDATE======================
+void edit(Node **head, Node **tail){
+	if(isEmpty(*head, *tail)){
+		cout<<"LINKED LIST KOSONG"<<endl;
+		return;
+	}
+	cout<<"Panjang Linked List : "<<sumLIST(*head)<<endl;
+	cout<<"Pilih Indeks Yang Diedit : ";cin>>pilih;
+	Node *temp = *head;
+	if(pilih>=0&&pilih<=sumLIST(*head)-1){
+		for(i=0;i<pilih;i++){
+			temp = temp->next;
+		}
+		cout<<"Masukkan Nama : ";fflush(stdin);getline(cin, temp->data.nama);
+		cout<<"Masukkan Berat Pakaian : ";cin>>temp->data.berat;
+		cout<<"Pilih Jenis Layanan : "<<endl;
+		cout<<"1. Wet Clean"<<endl;
+		cout<<"2. Dry Clean"<<endl;
+		cout<<"Masukkan Pilihan...";cin>>pilih;
+		switch(pilih){
+			case 1 : temp->data.layanan = "Wet Clean";
+			temp->data.harga = temp->data.berat * 5000;break;
+			case 2 : temp->data.layanan = "Dry Clean";
+			temp->data.harga = temp->data.berat * 7000;break;
+			default: cout<<"Pilihan Tidak Tersedia"<<endl; system("pause");cin.clear();cin.ignore(1000, '\n')
+			;break;
+			}
+		cout<<"Masukkan Tanggal(h) : ";cin>>temp->data.tgl;
+		cout<<"Masukkan Bulan(b) : ";cin>>temp->data.bln;
+		cout<<"Masukkan Tahun(t) : ";cin>>temp->data.thn;
+		cout<<"Data Berhasil Diubah"<<endl;
+		system("pause");
+		system("cls");
+	}else{
+		system("cls");
+		cout<<"Indeks Diluar Jangkauan"<<endl;
+		system("pause");
+		system("cls");
+	}
+}
+
+//====================SORT MERGE========================
+Node *namaASC(Node *a, Node *b){
+    Node *result = NULL;
+    
+    if (a == NULL) return (b);
+    else if (b == NULL) return (a);
+    
+    if (a->data.nama <= b->data.nama){
+        result = a;
+        result->next = namaASC(a->next, b);
+    }else{
+        result = b;
+        result->next = namaASC(a, b->next);
+    }
+    return (result);
+}
+Node *namaDSC(Node *a, Node *b){
+    Node *result = NULL;
+    
+    if (a == NULL) return (b);
+    else if (b == NULL) return (a);
+    
+    if (a->data.nama >= b->data.nama){
+        result = a;
+        result->next = namaDSC(a->next, b);
+    }else{
+        result = b;
+        result->next = namaDSC(a, b->next);
+    }
+    return (result);
+}
+ 
+void FrontBackSplit(Node *source, Node **frontRef, Node **backRef){
+    Node *fast;
+    Node *slow;
+    slow = source;
+    fast = source->next;
+ 
+    while (fast != NULL){
+        fast = fast->next;
+        if (fast != NULL){
+            slow = slow->next;
+            fast = fast->next;
+        }
+    }
+    
+    *frontRef = source;
+    *backRef = slow->next;
+    slow->next = NULL;
+}
+ 
+void MergeSort(Node **headRef){
+    Node *head = *headRef;
+    Node *a;
+    Node *b;
+    if ((head == NULL) || (head->next == NULL)) return;
+    FrontBackSplit(head, &a, &b);
+    MergeSort(&a);
+    MergeSort(&b);
+    if(urut==1){
+    	*headRef = namaASC(a, b);
+	}else if(urut==2){
+		*headRef = namaDSC(a, b);
+	}else{
+		cout<<"Pilihan Tidak Valid"<<endl;
+	}
+    
+}
+
+
+
+//===================JUMP SEARCH===================
+int jumpSearch(struct Node *node, string x, int n){
+    int step = sqrt(n);
+    int prev;
+    // int i = min(step, n);
+    // Inisiasi head untuk traversal dari awal
+    Node *head = node;
+    // Traversal node ke-i
+    for (int trv = 0; head->next != NULL && trv < min(step, n)-1; trv++){
+        head = head->next;
+    } 
+    // while (arr[min(step, n)-1] < x)
+    while (head->data.nama < x) {
+        prev = step;
+        step += sqrt(n);
+        if (prev >= n) return -1;
+ 
+        // Traversal ke node index step-1/n-1
+        for (int trv = 0; head->next != NULL && trv < min(step, n)-1; trv++){
+            head = head->next;
+        } 
+    }
+    // Inisiasi head2 untuk traversal dari awal lagi
+    Node *head2 = node;
+    // Traversal ke node index prev
+    for (int trv = 0; head2->next != NULL && trv < prev; trv++){
+        head2 = head2->next;
+    } 
+ 
+    // trv = Index sekarang
+    while (head2->data.nama < x) {
+        prev++;
+        if (prev == min(step, n)) return -1;
+        
+        // Setelah prev++, pindah ke node prev selanjutnya
+        for (int trv = 0; head2->next != NULL && trv < prev; trv++){
+            head2 = head2->next;
+        }
+    }
+    // Jika data sama maka kembalikan nilai prev.
+    if (head2->data.nama == x) return prev;
+    return -1;
+}
+
+
+
+
+
+
+
+int main(){
+	Node *HEAD = NULL, *TAIL = NULL;
+	while(true){
+		cout<<"Panjang List = "<<sumLIST(HEAD)<<endl;
+		cout<<"======MENU CRUD======"<<endl;
+		cout<<"1. SHOW"<<endl;
+		cout<<"2. ADD"<<endl;
+		cout<<"3. UPDATE"<<endl;
+		cout<<"4. DELETE"<<endl;
+		cout<<"5. SORT"<<endl;
+		cout<<"6. SEARCH"<<endl;
+		cout<<"0. EXIT"<<endl;
+		cout<<"====================="<<endl;
+		cout<<"Masukkan Pilihan... ";cin>>pilih;
+		if(pilih==1){
+			if(isEmpty(HEAD, TAIL)){
+			cout<<"LINKED LIST KOSONG"<<endl;
+			system("pause");
+			system("cls");
+			continue;
+			}
+			cout<<"1.SHOW (HEAD)"<<endl;
+			cout<<"2.TAIL (TAIL)"<<endl;
+			cout<<"Masukkan Pilihan.. ";cin>>pilih;
+			if(pilih==1){
+				system("cls");
+				showHEAD(HEAD);
+				system("pause");
+				system("cls");
+			}else if(pilih==2){
+				system("cls");
+				showTAIL(TAIL);
+				system("pause");
+				system("cls");
+			}else{
+				cout<<"Pilihan Tidak Valid"<<endl;
+				system("pause");
+				system("cls");
+				continue;
+			}
+		}else if(pilih==2){
+			if(isEmpty(HEAD, TAIL)){
+				system("cls");
+				cout<<"LINKED LIST KOSONG, TAMBAH DATA AWAL"<<endl;
+				system("pause");
+				addFIRST(&HEAD, &TAIL);
+			}
+			else{
+				cout<<"1. ADD FIRST"<<endl;
+				cout<<"2. ADD LAST"<<endl;
+				cout<<"3. ADD SPECIFIC"<<endl;
+				cout<<"Masukkan Pilihan... ";cin>>pilih;
+				if(pilih==1){
+					system("cls");
+					addFIRST(&HEAD, &TAIL);
+				}else if(pilih==2){
+					system("cls");
+					addLAST(&HEAD, &TAIL);
+				}else if(pilih==3){
+					addBETWEEN(&HEAD, &TAIL);
+				}else{
+					cout<<"Pilihan Tidak Valid"<<endl;
+					system("pause");
+					system("cls");
+					continue;
+				}
+			}
+		}else if(pilih==3){
+			system("cls");
+			showHEAD(HEAD);
+			edit(&HEAD, &TAIL);
+		}else if(pilih==4){
+			if(isEmpty(HEAD, TAIL)){
+				cout<<"LINKED LIST KOSONG"<<endl;
+				system("pause");
+				system("cls");
+				continue;
+			}
+			cout<<"1.DELETE FIRST"<<endl;
+			cout<<"2.DELETE LAST"<<endl;
+			cout<<"3.DELETE BETWEEN"<<endl;
+			cout<<"Masukkan Pilihan.. ";cin>>pilih;
+			if(pilih==1){
+				deleteFIRST(&HEAD, &TAIL);
+			}else if(pilih==2){
+				deleteLAST(&HEAD, &TAIL);
+			}else if(pilih==3){
+				showHEAD(HEAD);
+				deleteBETWEEN(&HEAD, &TAIL);
+			}else{
+				cout<<"Pilihan Tidak Valid"<<endl;
+				continue;
+			}
+		}else if(pilih==5){
+			cout<<"=======SORTING======="<<endl;
+    		cout<<"1. ASCENDING"<<endl;
+    		cout<<"2. DESCENDING"<<endl;
+    		cout<<"Masukkan Pilihan"<<endl;
+    		cin>>urut;
+			MergeSort(&HEAD);
+			system("cls");
+		}else if(pilih==6){
+			urut=1;
+			MergeSort(&HEAD);
+			showHEAD(HEAD);
+			int n = sumLIST(HEAD);
+			cout<<"\nMasukkan Nama Yang Ingin Dicari : ";cin>>up;
+			int ind=jumpSearch(HEAD, up, n);
+			system("cls");
+			cout<<"Data Ditemukan Pada Indeks-"<<ind<<endl;
+			for(i=0;i<ind;i++){
+				HEAD = HEAD->next;
+			}
+			cout<<"\n"<<endl;
+			cout<<"Kode Transaksi\t: "<<HEAD->data.id<<endl;
+			cout<<"Nama\t\t: "<<HEAD->data.nama<<endl;
+			cout<<"Jenis Layanan\t: "<<HEAD->data.layanan<<endl;
+			cout<<"Berat Pakaian\t: "<<HEAD->data.berat<<" Kg"<<endl;
+			cout<<"Total Biaya\t: "<<"Rp. "<<HEAD->data.harga<<endl;
+			cout<<"Tanggal\t\t: "<<HEAD->data.tgl<<"/"<<HEAD->data.bln<<"/"<<HEAD->data.thn<<endl;
+			system("pause");
+			system("cls");
+			
+		}
+		else if(pilih==0){
+			cout<<"MAKASIH MANG"<<endl;
+			break;
+		}
+	}
+	return 0;
+}
